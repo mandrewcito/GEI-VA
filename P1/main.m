@@ -2,6 +2,9 @@ function [outImg] = main(imgsrc,option,args,type)
 %MAIN programa principal
 mostrarImg=true;
 image=cargarImagen(imgsrc);
+if mostrarImg,
+imshow(image);
+end
 switch(option)
     case 'histStretch'
         minValue=args(1);
