@@ -1,23 +1,27 @@
 function outputImage = edgeCanny( inputImage ,n,sigma , tLow , tHigh )
 %EDGECANNY detector de bordes canny
 debug=0;
-%1.-establecemos umbral y tamaño filtro
+
   if(debug),
     subplot(3,3,1);
     imshow(inputImage)
     title('Imagen Normal');
   end
-%2.- Convolucionamos con un kernel gausiano
+% -----------------> PASO 1 MEJORA IMAGEN
+  %1.-establecemos umbral y tamaño filtro
   kernelG = gaussianKernel(n,sigma);
+  %2.- Convolucionamos con un kernel gausiano
   paso1 = convolucionar(inputImage,kernelG);
   if(debug),
     subplot(3,3,2);
     imshow(uint8(paso1))
     title('Filtro gaussiano');
   end
-%3.- Preparamos mascaras y convolucionamos lo anterior  
-   mascara_x = [ 1 0 -1];
-   mascara_y = [-1; 0; 1];
+%3.- Preparamos mascaras y convolucionamos lo anterior
+   %mascara_x = [-1 0 1];%sobel
+   %mascara_y = [-1; 0; 1];%sobel
+   mascara_x = [ 1 0 -1];%prewit
+   mascara_y = [-1; 0; 1];%prewit
    res_x = convolucionar(paso1,mascara_x);
    res_y = convolucionar(paso1,mascara_y);
 %4.- Obtenemos magnitud y orientacion
@@ -37,15 +41,16 @@ debug=0;
     %colormap(mapa)
     %title('Orientacion Bordes');
   end
-
-%6.- Hacemos supresion no Maxima (Orientaciones)
+% -----------------> PASO 2 
+%6.- Hacemos supresion no Maxima (Orientaciones) (PASO 2 )
   paso3=supresionNoMaxima(or,mag); 
   if debug,
     subplot(3,3,4);
     imshow(paso3)
     title('Supresion no max');
   end
-%7.- hacemos histeresis
+  % -----------------> PASO 3
+%7.- hacemos histeresis umbralizacion
    paso4=histeresis(paso3,or,tLow,tHigh);
 %invertimos ! 
    ipaso4=ones(size(paso4));
