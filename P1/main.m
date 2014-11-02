@@ -3,6 +3,7 @@ function [outImg] = main(imgsrc,option,args,type)
 mostrarImg=true;
 image=cargarImagen(imgsrc);
 if mostrarImg,
+figure
 imshow(image);
 end
 switch(option)
@@ -34,7 +35,8 @@ switch(option)
         sigma=args(2);
         tlow=args(1);
         thigh=args(3);
-        outImg=edgeCanny(image,n,sigma,tlow,thigh);
+        edgeDetector=type;
+        outImg=edgeCanny(image,n,sigma,tlow,thigh,edgeDetector);
         
     case 'cornerSusan'
         radius=args(1);

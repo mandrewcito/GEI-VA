@@ -1,7 +1,6 @@
-function outputImage = edgeCanny( inputImage ,n,sigma , tLow , tHigh )
+function outputImage = edgeCanny( inputImage ,n,sigma , tLow , tHigh,inputEdgeDetector )
 %EDGECANNY detector de bordes canny
 debug=0;
-
   if(debug),
     subplot(3,3,1);
     imshow(inputImage)
@@ -18,10 +17,13 @@ debug=0;
     title('Filtro gaussiano');
   end
 %3.- Preparamos mascaras y convolucionamos lo anterior
+   
    %mascara_x = [-1 0 1];%sobel
    %mascara_y = [-1; 0; 1];%sobel
-   mascara_x = [ 1 0 -1];%prewit
-   mascara_y = [-1; 0; 1];%prewit
+   %mascara_x = [ 1 0 -1];%prewit
+   %mascara_y = [-1; 0; 1];%prewit
+   %usando la matriz -> k^2 si se usan lineas solo complejidad 2K
+   [mascara_x,mascara_y]=selecEdgeDetector( inputEdgeDetector );
    res_x = convolucionar(paso1,mascara_x);
    res_y = convolucionar(paso1,mascara_y);
 %4.- Obtenemos magnitud y orientacion
