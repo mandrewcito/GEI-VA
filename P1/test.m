@@ -28,7 +28,7 @@ switch(option)
        main('imagenes/chica.png','edgeCanny',[5 2 10 20],'Prewitt');
         
     case 'cornerSusan'
-        main('imagenes/chess.jpg','cornerSusan',[7 40 2/4]);
+        main('imagenes/susan.png','cornerSusan',[3 40 2/4]);
     otherwise 
         error('La función indicada no es valida');  
 end
