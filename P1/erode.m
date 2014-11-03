@@ -34,6 +34,6 @@ function outputImage = erode (inputImage, strElType, strElSize)
             end             
         end
     end    
-%9.- Devolvemos la imagen    
-    outputImage = uint8(outputImage);
+%9.- Devolvemos la imagen
+    outputImage = outputImage;
 end

@@ -37,5 +37,5 @@ function outputImage = dilate (inputImage, strElType, strElSize)
         end
     end    
 %9.- Devolvemos la imagen    
-    outputImage = uint8(outputImage);
+    outputImage = outputImage;
 end

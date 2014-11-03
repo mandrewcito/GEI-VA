@@ -1,6 +1,6 @@
 function [outImg] = main(imgsrc,option,args,type)
 %MAIN programa principal
-mostrarImg=true;
+mostrarImg=false;
 image=cargarImagen(imgsrc);
 if mostrarImg,
 figure
