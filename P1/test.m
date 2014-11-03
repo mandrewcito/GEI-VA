@@ -25,7 +25,7 @@ switch(option)
         main('imagenes/erode-dilate.jpg','closing',[7],'cross');
         
     case 'edgeCanny'
-       main('imagenes/chica.png','edgeCanny',[5 2.3 4.0 9.5],'Prewitt');
+       main('imagenes/chica.png','edgeCanny',[5 2 10 20],'Prewitt');
         
     case 'cornerSusan'
         main('imagenes/chess.jpg','cornerSusan',[7 40 2/4]);
