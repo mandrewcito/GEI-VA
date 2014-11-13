@@ -2,7 +2,7 @@
 import sys, getopt
 import numpy as np
 import cv2
-
+#TODO hacer de esto una funcion decente no un script 
 def detect(img, cascade):
     rects = cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(30, 30), flags = cv2.CASCADE_SCALE_IMAGE)
     if len(rects) == 0:

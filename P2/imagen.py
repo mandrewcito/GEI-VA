@@ -81,4 +81,6 @@ class Imagen:
       return self.simpleThresholding((100,255),"binary",True)
     if tipo=="Adaptive":
       return self.adaptiveThresholding((100,255),"gaussian",False)
-    print "el tipo tiene que ser : binary | gaussian  y se puede añadir a mayores Otsu" 
+    print "tipo binary o gaussian , true or false on otsu" 
+
+

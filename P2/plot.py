@@ -1,4 +1,5 @@
-from imagen import Imagen
+import numpy as np
+import cv2
 from matplotlib import pyplot as plt
 
 class Plot:
@@ -6,7 +7,6 @@ class Plot:
     pass
 
   def show(self,imageList,rows):
-    #TODO hacer el plot en varias lineas por ahora solo lo hace en 1 
     size = len(imageList)
     if size == 0:
       raise("error lista de imagenes vacia")
@@ -17,7 +17,7 @@ class Plot:
     rc=str(rows)+str(cols)
     for n,img in enumerate(imageList):
       num=int(rc+str(n+1))
-      plt.subplot(num),plt.imshow(img.imagen),plt.title(img.name)
+      plt.subplot(num),plt.imshow(img[0]),plt.title(img[1])
       plt.xticks([]),plt.yticks([])
     plt.show()
 
