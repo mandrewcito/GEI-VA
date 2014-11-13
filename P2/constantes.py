@@ -1,2 +1,2 @@
-test="BiometriaJPG"
+test="Biometria/jpg"
 testOLD="Biometria"
