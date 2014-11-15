@@ -5,8 +5,7 @@ class Imagen:
   def __init__(self,imagen,name="carlos"):
     if type(imagen) ==str:
       self.imagen=cv2.imread(c.test+"/"+imagen)
-    else :
-      if type(imagen)==np.ndarray:
+    elif type(imagen)==np.ndarray:
         self.imagen=imagen
     self.name=name
 
