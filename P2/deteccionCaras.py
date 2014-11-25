@@ -9,12 +9,18 @@ import facedetect as f
 def main():
   imgSrc=os.listdir(c.test)
   imagenes=[]
+  total=0
+  detectadas=0
   for e in imgSrc:
-    im,recs=f.detectFace(Imagen(e).imagen)
+    total+=1
+    im,todo=f.detectFace(Imagen(e).imagen,e)
+    if todo:
+      detectadas+=1
     tmp=Imagen(im,name=e)
     imagenes.append(tmp)
   plt=Plot()
   tmp=[]
+  print "total caras = "+str(total)+" todo detectado = "+str(detectadas)
   for e in imagenes:
     tmp.append((e.imagen,e.name))
   plt.show(tmp,5)

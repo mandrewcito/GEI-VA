@@ -38,12 +38,12 @@ class Imagen:
     return Imagen(img,self.name+"gaussianBlur"+"x-"+str(kernelx)+",y-"+str(kernely)+"sigma-"+str(sigma))
 
   def medianFilter(self,kernelSize):
-    img= median = cv2.medianBlur(img,kernelSize)
+    img = cv2.medianBlur(self.imagen,kernelSize)
     return Imagen(img,self.name+"medianBlur"+"KernelSize--"+str(kernelSize))
 
   def bilateralFilter(self,size,x,y):
-    cv2.bilateralFilter(img,size,x,y)
-    return Imagen(img,self.name+"bilateralBlur"+"KernelSize--"+str(kernelSize))
+    img=cv2.bilateralFilter(self.imagen,size,x,y)
+    return Imagen(img,self.name+"bilateralBlur"+"KernelSize--"+str(size))
 
   def blur(self,tipo):
     #suavizado
