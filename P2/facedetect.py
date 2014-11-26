@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import constantes as c 
 from imagen import Imagen
+import types
 
 def ecualizar(gray):
   #gray_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2GRAY)
@@ -16,34 +17,94 @@ def detectFaceRects(gray,cascade):
     rects = detect(img.imagen, cascade)
   return rects
 
+def haz_simetrico(subrectsR,subrectsL,cara): #TODO arreglar esto!  
+  (x1,y1,x2,y2)=cara
+  centro=x2-x1
+  if len(subrectsR)==0:
+    subrectsR=np.array([subrectsL[0][0]+abs(centro-subrectsL[0][0]),subrectsL[0][1],subrectsL[0][2]+abs(centro-subrectsL[0][2]),subrectsL[0][3]], dtype=np.int32)
+    print subrectsL
+    return np.array([[subrectsR[0],subrectsR[1],subrectsR[2],subrectsR[3]],[subrectsL[0],subrectsL[1],subrectsL[2],subrectsL[3]]],dtype=np.int32)
+  if len(subrectsL)==0:
+    subrectsL=np.array([subrectsR[0][0]-abs(centro-subrectsR[0][0]),subrectsR[0][1],subrectsR[0][2]-abs(centro-subrectsR[0][2]),subrectsR[0][3]], dtype=np.int32)
+    print subrectsL
+    return np.array([[subrectsR[0],subrectsR[1],subrectsR[2],subrectsR[3]],[subrectsL[0],subrectsL[1],subrectsL[2],subrectsL[3]]],dtype=np.int32)
+  return np.array([])
+
+def ojos_separados(x1,y1,x2,y2,gray):
+  #detectamos los ojos por separado TODO -> no detecta nada!
+  roi = gray[y1:y2, x1:x2]
+  nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_lefteye_2splits.xml")
+  subrectsL = detect(roi.copy(), nested)
+  subrectsL=seleccionaMenor(subrectsL)
+  nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_righteye_2splits.xml")
+  subrectsR = detect(roi.copy(), nested)
+  subrectsR=seleccionaMenor(subrectsR)
+  subrects=subrectsL+subrectsL
+  if len(subrectsR)==1 and len(subrectsL)==1:
+    print "ojos separados"
+    return subrects
+  if len(subrectsR)==1 or len(subrectsL)==1:
+    cara=(x1,y1,x2,y2)
+    print "hacer simetrico"
+    #return haz_simetrico(subrectsR,subrectsL,cara)
+    return subrects
+    
+
+def ojos_grandes(x1,y1,x2,y2,gray):
+  #gray=Imagen(gray).gaussianFilter(17,17,1).imagen
+  roi = gray[y1:y2, x1:x2]
+  nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_mcs_eyepair_big.xml")
+  subrects = detect(roi.copy(), nested)
+  return subrects
+
+def ojos_peq(x1,y1,x2,y2,gray):
+  #gray=Imagen(gray).blur("bilateral").imagen
+  gray=Imagen(gray).gaussianFilter(17,17,4).imagen
+  roi = gray[y1:y2, x1:x2]
+  nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_mcs_eyepair_small.xml")
+  subrects = detect(roi.copy(), nested)
+  return subrects
+
+def ojos_gafas(x1,y1,x2,y2,gray):
+  #gray=Imagen(gray).gaussianFilter(15,15,3).imagen
+  roi = gray[y1:y2, x1:x2]
+  nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_eye_tree_eyeglasses2.xml")
+  subrects = detect(roi.copy(), nested)
+  return subrects
+
 def detectEyes(x1,y1,x2,y2,gray,vis):
-  #el principal solo detecta 7 casos! TODO ......
   subrects=[]
   nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_eye.xml")
   roi = gray[y1:y2, x1:x2]
   vis_roi = vis[y1:y2, x1:x2]
   subrects = detect(roi.copy(), nested)
   if len(subrects)==2:
-    print"PRINCIPAL"
-  if len(subrects)<2:#detectamos los ojos por separado TODO -> no detecta nada!
-    nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_lefteye_2splits.xml")
-    subrectsL = detect(roi.copy(), nested)
-    nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_righteye_2splits.xml")
-    subrectsR = detect(roi.copy(), nested)
-    subrects=subrectsL+subrectsL
+    print "normales "
+    return subrects,vis_roi
+  #ojos peq
+  subrects=ojos_peq(x1,y1,x2,y2,gray)
+  if not type(subrects)==types.NoneType:
     if len(subrects)==2:
-      print"POR SEPARADO"
-  if len(subrects)<2:#o que sean muy peq TODO -> no detecta nada!
-    nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_mcs_eyepair_small.xml")
-    subrects = detect(roi.copy(), nested)
+      print "ojos peq!"
+      return subrects,vis_roi
+  #ojos grandes
+  subrects = ojos_grandes(x1,y1,x2,y2,gray)
+  if not type(subrects)==types.NoneType:
     if len(subrects)==2:
-      print"OJOS PEQ"
-  if len(subrects)<2:#o que sean muy grandes TODO no detecta ningun caso
-    nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_mcs_eyepair_big.xml")
-    subrects = detect(roi.copy(), nested)
+      print "ojos grandes!"
+      return subrects,vis_roi
+  #ojos separados
+  subrects=ojos_separados(x1,y1,x2,y2,gray)
+  if not type(subrects)==types.NoneType:
     if len(subrects)==2:
-      print"OJOS GRANDES"
-  return subrects,vis_roi
+      return subrects,vis_roi
+  #ojos con gafas
+  subrects=ojos_gafas(x1,y1,x2,y2,gray)
+  if not type(subrects)==types.NoneType:
+    if len(subrects)==1:
+      print "gafas"
+      return subrects,vis_roi
+  return [],vis_roi
 
 def detectMouth(x1,y1,x2,y2,gray,vis):
   mouth= cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+c.boca)
@@ -104,15 +165,18 @@ def detectFace(img,name,cascadeFilter="haarcascade_frontalface_default.xml",nest
   todo=False
   for x1, y1, x2, y2 in rects:
     detector=0;
+    #boca
     subrects,vis_roi=detectMouth(x1,(y1-y2)*2/3,x2,y2,gray,vis)
     if len(subrects)>=1:
       subrects=seleccionaMenor(subrects)
       detector+=1
     draw_rects(vis_roi, subrects, (0, 255, 0))
-    subrects,vis_roi=detectEyes(x1,y1,x2,(y1-y2)*4/8,gray,vis)
+    #ojos
+    subrects,vis_roi=detectEyes(x1,y1,x2,(y1-y2)*2/5,gray,vis)
     if len(subrects)>=1:
       detector+=1
     draw_rects(vis_roi, subrects, (0, 255, 255))
+    #nariz
     subrects,vis_roi=detectNose(x1,y1,x2,y2,gray,vis)
     if len(subrects)>=1:
       detector+=1
