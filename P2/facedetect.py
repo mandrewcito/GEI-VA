@@ -58,17 +58,18 @@ def ojos_grandes(x1,y1,x2,y2,gray):
   return subrects
 
 def ojos_peq(x1,y1,x2,y2,gray):
-  #gray=Imagen(gray).blur("bilateral").imagen
-  gray=Imagen(gray).gaussianFilter(17,17,4).imagen
   roi = gray[y1:y2, x1:x2]
   nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_mcs_eyepair_small.xml")
   subrects = detect(roi.copy(), nested)
   return subrects
 
 def ojos_gafas(x1,y1,x2,y2,gray):
-  #gray=Imagen(gray).gaussianFilter(15,15,3).imagen
+  gray=Imagen(gray).gaussianFilter(5,5,2).imagen
+  ret3,th3 = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+  th=Imagen(th3-gray)
+  gray=th.imagen
   roi = gray[y1:y2, x1:x2]
-  nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_eye_tree_eyeglasses2.xml")
+  nested = cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+"haarcascade_eye_tree_eyeglasses.xml")
   subrects = detect(roi.copy(), nested)
   return subrects
 
@@ -152,12 +153,17 @@ def seleccionaMenor(subrects):
       menor=[rect]
   return menor
 
-def detectFace(img,name,cascadeFilter="haarcascade_frontalface_default.xml",nestedFilter="haarcascade_eye.xml"):
+def detectCara(gray):
+  cascade= cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+c.cascadeFilter)
+  rects=detectFaceRects(gray,cascade)
+  return rects
+
+
+def detectFace(img,name,nestedFilter="haarcascade_eye.xml"):
   #devuelve la imagen con la cara , la region ocular marcada  y un dict con rectangulos 
   gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
   gray = cv2.equalizeHist(gray)
-  cascade= cv2.CascadeClassifier(c.cascadeFilterFolder+"/"+cascadeFilter)
-  rects=detectFaceRects(gray,cascade)
+  rects=detectCara(gray)
   vis = img.copy()
   draw_rects(vis, rects, (0, 0, 255))
   #para cada cara detectada, detectamos sus ojos.
