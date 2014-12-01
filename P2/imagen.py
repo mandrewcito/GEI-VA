@@ -13,6 +13,9 @@ class Imagen:
     #Total number of pixels is accessed
     return  self.imagen.size
 
+  def gray(self):
+    return Imagen(cv2.cvtColor(self.imagen, cv2.COLOR_BGR2GRAY),name=self.name)
+
   def show(self):
     cv2.namedWindow(self.name, cv2.CV_WINDOW_AUTOSIZE)
     cv2.startWindowThread()
