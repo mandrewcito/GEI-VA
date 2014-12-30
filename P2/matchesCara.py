@@ -21,8 +21,16 @@ kp2, des2 = orb.detectAndCompute(img2,None)
 
 # create BFMatcher object
 bf = cv2.BFMatcher(cv2.NORM_HAMMING)#, crossCheck=True)
+#filtramos los kp por la zona de la cara para las dos imagenes 
+a,b,c= f.detectFace(cv2.imread(im1),"im1")
+region1=c[0][0]
+#kp1=flt.filtrarKP(kp1,region)
+a,b,c= f.detectFace(cv2.imread(im2),"im2")
+region2=c[0][0]
+#kp2=flt.filtrarKP(kp2,region)
 matches = bf.knnMatch(des1, trainDescriptors = des2, k = 2)
 p1, p2, kp_pairs = filter_matches(kp1, kp2, matches)
+kp_pairs=flt.filtrarKP(kp_pairs,region1,region2)
 explore_match('find_obj', img1,img2,kp_pairs)#cv2 shows image
 if len(kp_pairs)>25:
   print True
